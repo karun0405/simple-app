@@ -3,6 +3,9 @@ pipeline {
     tools {
         maven 'maven3'
     }
+    environment {
+                PATH = "/opt/maven/bin:$PATH"
+                }
     options {
         buildDiscarder logRotator(daysToKeepStr: '5', numToKeepStr: '7')
     }
