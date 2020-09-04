@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+        environment {
+                PATH = "/opt/maven/bin:$PATH"
+                }
+        stages {
+            stage ("Get the source code from GUTHUB") {
+                steps {
+                    checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+                    doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], 
+                    userRemoteConfigs: [[credentialsId: '62b16604-86ba-421c-ab0e-6680a839416f', 
+                    url: 'https://github.com/karun0405/simple-app.git']]])
+                }
+            }
+            stage ("Building the code "){
+                steps {
+                    sh "mvn clean compile package "
+                    archiveArtifacts artifacts: 'target/*.war', onlyIfSuccessful: true
+                }
+            }
+             stage ("Uploading the artifact into nexus repo "){
+                steps {
+                    script{
+
+                    def mavenPom = readMavenPom file: 'pom.xml'
+                    def nexusRepoName = mavenPom.version.endsWith("SNAPSHOT") ? "simpleapp-snapshot" : "simpleapp-release"
+                    nexusArtifactUploader artifacts: [
+                    [
+                        artifactId: 'simple-app', 
+                        classifier: '', 
+                        file: "target/simple-app-${mavenPom.version}.war",
+                        type: 'war'
+                    ]
+                ], 
+                    credentialsId: 'nexusrepo', 
+                    groupId: 'in.javahome', 
+                    nexusUrl: '192.168.43.68:8081',
+                    nexusVersion: 'nexus3', 
+                    protocol: 'http', 
+                    repository: 'valaxytech', 
+                    version: "${mavenPom.version}"
+                }
+            }
+        }
+    }
+}
