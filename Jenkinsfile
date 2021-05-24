@@ -1,8 +1,7 @@
 pipeline {
     agent any
-    tools {
-        maven 'maven3'
-    }
+    
+}
     environment {
                 PATH = "/opt/maven/bin:$PATH"
                 }
