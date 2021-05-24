@@ -1,7 +1,7 @@
 pipeline {
     agent any
     
-}
+    }
     environment {
                 PATH = "/opt/maven/bin:$PATH"
                 }
@@ -37,7 +37,6 @@ pipeline {
                     repository: 'valaxytech', 
                     version: "${mavenPom.version}"
                     }
+                }
             }
         }
-    }
-}
